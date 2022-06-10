@@ -13,4 +13,6 @@ The major steps in moving from these raw reads to variant sites are as follows
 1) RAW READ ALIGNMENT
 When using BWA with GATK in mind as the eventual end goal, we need to be sure to include information about the sequencing platform, read group, and sample ID when running BWA.
 
+BWA mem manual (http://bio-bwa.sourceforge.net/bwa.shtml)
+
 
