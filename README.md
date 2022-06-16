@@ -10,18 +10,23 @@ The major steps in moving from these raw reads to variant sites are as follows
 
 
 
-1) RAW READ ALIGNMENT
+###1) RAW READ ALIGNMENT
 When using BWA with GATK in mind as the eventual end goal, we need to be sure to include information about the sequencing platform, read group, and sample ID when running BWA.
 
 BWA mem manual (http://bio-bwa.sourceforge.net/bwa.shtml)
 
-2) RAW READ PROCESSING
+###2) RAW READ PROCESSING
 
 Once we have all the alignments we need to do the following things
 a) Convert .sam to .bam and sort it 
 b) Ditch alignments where quality score is below 30
 c) Remove all secondary alignments
-d) Add read group information so GATK doesn't freak out https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-
-e) Mark duplicates- (Also so GATK doesn't freak out). https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-
+d) [Add read group information so GATK doesn't freak out] (https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-)
+e) [Mark duplicates- (Also so GATK doesn't freak out)]. (https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-)
+
+###3) CALL VARIANTS
+
+We are going to use GATK's HaplotypeCaller to accomplish this
+The BWAarray.sh script
 
 
