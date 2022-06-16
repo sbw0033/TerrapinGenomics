@@ -21,8 +21,8 @@ Once we have all the alignments we need to do the following things
 a) Convert .sam to .bam and sort it 
 b) Ditch alignments where quality score is below 30
 c) Remove all secondary alignments
-d) [Add read group information so GATK doesn't freak out] (https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-)
-e) [Mark duplicates- (Also so GATK doesn't freak out)]. (https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-)
+d) [Add read group information so GATK doesn't freak out](https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-)
+e) [Mark duplicates- (Also so GATK doesn't freak out)](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-)
 
 ###3) CALL VARIANTS
 
