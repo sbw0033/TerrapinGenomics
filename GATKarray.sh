@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=GATKtestArray 
+#SBATCH --job-name=GATKtestArray
 #SBATCH --ntasks=20
 #SBATCH --partition=general          # name of partition to submit job
 #SBATCH --time=24:00:00
