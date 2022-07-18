@@ -45,18 +45,18 @@ bwa mem -M -t 14 \
 cd "${AlignmentDirectory}"
 
 #First, convert sam to .bam
-samtools view -bS -@ 10 "${SLURM_ARRAY_TASK_ID}".sam > "${SLURM_ARRAY_TASK_ID}".bam
+samtools view -bS -@ 14 "${SLURM_ARRAY_TASK_ID}".sam > "${SLURM_ARRAY_TASK_ID}".bam
 
 #First, sort all of the bams
-samtools sort "${AlignmentDirectory}"/"${SLURM_ARRAY_TASK_ID}".bam --threads 10 -o "${SortedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.bam
+samtools sort "${AlignmentDirectory}"/"${SLURM_ARRAY_TASK_ID}".bam --threads 14 -o "${SortedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.bam
 
 cd "${SortedBamDirectory}"
 
 #Now, keep alignments with a map quality score greater than or equal to 30
-samtools view --threads 10 -q 30 -b "${SLURM_ARRAY_TASK_ID}"_sorted.bam > "${SortedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.q30.bam
+samtools view --threads 14 -q 30 -b "${SLURM_ARRAY_TASK_ID}"_sorted.bam > "${SortedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.q30.bam
 
 #Remove secondary alignments
-samtools view --threads 10 -h -F 0x900 "${SLURM_ARRAY_TASK_ID}"_sorted.q30.bam > "${CleanedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.q30.primary_only.bam
+samtools view --threads 14 -h -F 0x900 "${SLURM_ARRAY_TASK_ID}"_sorted.q30.bam > "${CleanedBamDirectory}"/"${SLURM_ARRAY_TASK_ID}"_sorted.q30.primary_only.bam
 
 #Get rid of intermediate files
 #rm *_sorted.q30.bam
@@ -80,4 +80,7 @@ java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar MarkDuplicates I="
 cd "${FinalAlignmentDirectory}"
 
 # Index the bam file
-samtools index "${SLURM_ARRAY_TASK_ID}"_0.bam
+samtools index --threads 14 "${SLURM_ARRAY_TASK_ID}"_0.bam
+
+#picard MarkDuplicates I="${SLURM_ARRAY_TASK_ID}"_sorted.q30.primary_only.bam O="${SLURM_ARRAY_TASK_ID}"_marked_duplicates.bam M="${SLURM_ARRAY_TASK_ID}"_marked_dup_metrics.txt
+#java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar BuildBamIndex I=18_marked_duplicates.bam
