@@ -1,18 +1,20 @@
 #!/bin/bash
 #SBATCH --job-name=BWAtestArray
-#SBATCH --ntasks=10
+#SBATCH --ntasks=14
 #SBATCH --partition=general          # name of partition to submit job
-#SBATCH --time=24:00:00
+#SBATCH --time=96:00:00
 #SBATCH --mail-type=ALL              # will send email for begin,end,fail
 #SBATCH --mail-user=sbw0033@auburn.edu
 #SBATCH --output=test_%A_%a.output 		#Changes the output to correspond to each subjob
 #SBATCH --error=test_%A_%a.error 		#Changes the error to correspond to each subjob
 #SBATCH --array=1,14,141,153,17,18,2,22,23,24,44,47,6,60,64,7,76,9,93
 
-AlignmentDirectory="/scratch/sbw0033/RawAlignments"
-SortedBamDirectory="/scratch/sbw0033/SortedAlignments"
-CleanedBamDirectory="/scratch/sbw0033/CleanedAlignments"
-FinalAlignmentDirectory="/scratch/sbw0033/FinalAlignments"
+RawReadDirectory="/scratch/sbw0033/TerrapinGenomics/Data/FastqCopiesFinal/clean"
+ReferenceIndexPrefix="/scratch/sbw0033/TerrapinGenomics/Data/TerrapinGenomeBWAIndex/Hap1_index"
+AlignmentDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinRawAlignments"
+SortedBamDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinSortedAlignments"
+CleanedBamDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinCleanedAlignments"
+FinalAlignmentDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinFinalAlignments"
 
 #Think about having a separate job for forward and reverse reads
 
@@ -22,19 +24,23 @@ module load samtools/1.11
 module load picard/2.23.9
 module load java/15.0.1
 
+#index the reference genome
+#cd /scratch/sbw0033/TerrapinGenomics/Data/
+#bwa index TerrapinReferenceHaplotype1.fasta.gz -p Hap1_index
+
 ########################
 #Get into the directory with all the raw reads
-cd /scratch/sbw0033/FastqCopies/clean/
+cd "$RawReadDirectory"
 
-bwa mem -M -t 10 \
-	/home/sbw0033/TerrapinGenomics/Data/PaintedTurtleResources/BWA_index_chr7/Chr7 \
-	/scratch/sbw0033/FastqCopies/clean/"${SLURM_ARRAY_TASK_ID}"/"${SLURM_ARRAY_TASK_ID}"_FW_reads.fq.gz /scratch/sbw0033/FastqCopies/clean/"${SLURM_ARRAY_TASK_ID}"/"${SLURM_ARRAY_TASK_ID}"_RV_reads.fq.gz \
-	2> /home/sbw0033/bwaSample_"${SLURM_ARRAY_TASK_ID}".err \
+#Run BWA
+bwa mem -M -t 14 \
+	"${ReferenceIndexPrefix}" \
+	"${RawReadDirectory}"/"${SLURM_ARRAY_TASK_ID}"/"${SLURM_ARRAY_TASK_ID}"_FW_reads.fq.gz "${RawReadDirectory}"/"${SLURM_ARRAY_TASK_ID}"/"${SLURM_ARRAY_TASK_ID}"_RV_reads.fq.gz \
+	2> /scratch/sbw0033/bwaSample_"${SLURM_ARRAY_TASK_ID}".err \
 	> "${AlignmentDirectory}"/"${SLURM_ARRAY_TASK_ID}".sam
 
 #Can Also add read group information this way
-java -Xmx8g -jar picard.jar AddOrReplaceReadGroups I="Sample1_sorted.bam" O="Sample1_IDed.bam" RGPU="RunBarcode1" RGSM="ReadGroupSample1" RGPL="Illumina" RGLB="ReadGroupLibrary"
-
+#java -Xmx8g -jar picard.jar AddOrReplaceReadGroups I="Sample1_sorted.bam" O="Sample1_IDed.bam" RGPU="RunBarcode1" RGSM="ReadGroupSample1" RGPL="Illumina" RGLB="ReadGroupLibrary"
 
 cd "${AlignmentDirectory}"
 
@@ -73,8 +79,5 @@ java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar MarkDuplicates I="
 
 cd "${FinalAlignmentDirectory}"
 
-# Index the fucking bam file
+# Index the bam file
 samtools index "${SLURM_ARRAY_TASK_ID}"_0.bam
-
-#picard MarkDuplicates I="${SLURM_ARRAY_TASK_ID}"_sorted.q30.primary_only.bam O="${SLURM_ARRAY_TASK_ID}"_marked_duplicates.bam M="${SLURM_ARRAY_TASK_ID}"_marked_dup_metrics.txt
-#java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar BuildBamIndex I=18_marked_duplicates.bam
