@@ -11,7 +11,7 @@
 
 RawReadDirectory="/scratch/sbw0033/TerrapinGenomics/Data/FastqCopiesFinal/clean"
 ReferenceIndexPrefix="/scratch/sbw0033/TerrapinGenomics/Data/TerrapinGenomeBWAIndex/Hap1_index"
-AlignmentDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinRawAlignments"
+AlignmentDirectory="/scratccd h/sbw0033/TerrapinAllAlignments/TerrapinRawAlignments"
 SortedBamDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinSortedAlignments"
 CleanedBamDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinCleanedAlignments"
 FinalAlignmentDirectory="/scratch/sbw0033/TerrapinAllAlignments/TerrapinFinalAlignments"
@@ -80,7 +80,7 @@ java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar MarkDuplicates I="
 cd "${FinalAlignmentDirectory}"
 
 # Index the bam file
-samtools index --threads 14 "${SLURM_ARRAY_TASK_ID}"_0.bam
+samtools index -@ 14 "${SLURM_ARRAY_TASK_ID}"_0.bam
 
 #picard MarkDuplicates I="${SLURM_ARRAY_TASK_ID}"_sorted.q30.primary_only.bam O="${SLURM_ARRAY_TASK_ID}"_marked_duplicates.bam M="${SLURM_ARRAY_TASK_ID}"_marked_dup_metrics.txt
 #java -Xms2g -Xmx16g -jar /tools/picard-2.23.9/libs/picard.jar BuildBamIndex I=18_marked_duplicates.bam
